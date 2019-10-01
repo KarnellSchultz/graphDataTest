@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Graphing Nasa Data</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+  </head>
+  <body>
+    <canvas id="chart" width="800" height="700"></canvas>
+
+    <script>
+      //Data from https://data.giss.nasa.gov/gistemp/
+      
+
+      graphData();
+    
+      async function graphData() {
+        const data = await getData();
+        // https://www.chartjs.org/docs/latest/charts/line.html
+        const ctx = document.getElementById("chart").getContext("2d");
+        const myChart = new Chart(ctx, {
+          type: "line",
+          options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    callback: function(value, index, values) {
+                        return value + '°';
+                    }
+                }
+            }]
+        }
+    },
+          data: {
+            labels: data.xs,
+            datasets: [
+              {
+                label: "Global Average Temps",
+                data: data.ys,
+                backgroundColor: ["red"],
+                borderColor: ["rgba(250, 107, 152, 1)"],
+                fill:false,
+                lineTension: .01,
+                borderWidth: 2,
+                pointHoverBackgroundColor: 'red',
+              }
+            ]
+          },
+        });
+      }
+
+ async function getData() {
+
+    const xs = [];
+    const ys = [];
+
+
+        const response = await fetch("climateData.csv");
+        const data = await response.text(); //since .csv returns text we use the text() to parse that data
+
+        const table = data.split(/\n/).slice(1); //regex to split the data into rows > slice removes the top row
+        const result = table.forEach(row => {
+          const columns = row.split(",");
+          const year = columns[0];
+          xs.push(year);
+          const temp = columns[1];
+          ys.push(parseFloat(temp) + 14)
+          console.log(year, temp);
+        });
+        return { xs, ys  };
+
+
+      }
+    </script>
+  </body>
+</html>
