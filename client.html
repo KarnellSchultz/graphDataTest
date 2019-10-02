@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+    <title>Snow Fall Data Sweden</title>
+  </head>
+  <body>
+    <canvas id="myChart"></canvas>
+
+    <script type="module">
+      import fixDataSet from "./datafix.js";
+      // column 1 : year when December falls
+      // column 2 : max snow depth (in cm) in December
+      // column 3 : max snow depth (in cm) during December-April
+      getData();
+
+      async function getData() {
+        const response = await fetch("snow.csv");
+        const data = await response.text();
+        const formattedGraphData = await fixDataSet(data);
+
+        console.log(formattedGraphData);
+        
+        await graphData(formattedGraphData);
+
+        function graphData(formattedGraphData) {
+
+
+          const ctx = document.getElementById("myChart").getContext("2d");
+          const chart = new Chart(ctx, {
+
+            // The type of chart we want to create
+            type: "line",
+            // The data for our dataset
+            data: {
+              labels: formattedGraphData.xyear,
+              datasets: [ {
+                  label: "max snow depth (in cm) in December",
+                  fill:false,
+                  backgroundColor: ["rgb(255, 99, 132)"],
+                  borderColor: "rgb(255, 99, 132)",
+                  data: formattedGraphData.ydata,
+                }, {
+                  label: "max snow depth (in cm) during December-April",
+                  fill:true,
+                  backgroundColor: ["lightgreen"],
+                  borderColor: "purple",
+                  data: formattedGraphData.ydata2,
+                }], 
+            },
+
+            // Configuration options go here
+            options: {
+
+        scales: {
+            yAxes: [{
+                ticks: {
+                    // Include a dollar sign in the ticks
+                    callback: function(value, index, values) {
+                        return `${value} cm`;
+                    }
+                }
+            }]
+        }
+    }
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
