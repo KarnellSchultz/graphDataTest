@@ -28,3 +28,7 @@ Department of Physical Geography
 Stockholm University
 SE-10691 Stockholm, Sweden
 anders.moberg@natgeo.su.se"
+
+
+Future idea on what to do with graph data: 
+- Maybe attemt to find a trend in global temps and stockholm snow.
